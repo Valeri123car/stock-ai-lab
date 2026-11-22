@@ -21,7 +21,10 @@ export default function StockDetailPage() {
   const [stock, setStock] = useState<Stock | null>(null);
   const [prices, setPrices] = useState<Price[]>([]);
   const [period, setPeriod] = useState<Period>('1L');
-  const [loading, setLoading] = useState(true);
+  // nalaganje je izpeljano: ali so prikazane cene že za trenutni instrument in obdobje
+  const kljuc = `${stockId}:${period}`;
+  const [nalozenKljuc, setNalozenKljuc] = useState<string | null>(null);
+  const loading = nalozenKljuc !== kljuc;
   const [error, setError] = useState<string | null>(null);
 
   // podatki o instrumentu (ime, ticker, tip)
@@ -36,12 +39,11 @@ export default function StockDetailPage() {
     const years = PERIODS.find(p => p.key === period)?.years;
     const from = years ? format(subYears(new Date(), years), 'yyyy-MM-dd') : undefined;
 
-    setLoading(true);
-    setError(null);
+    const k = `${stockId}:${period}`;
     api.prices(stockId, from)
-      .then(setPrices)
+      .then(p => { setPrices(p); setError(null); })
       .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
+      .finally(() => setNalozenKljuc(k));
   }, [stockId, period]);
 
   const change = useMemo(() => {

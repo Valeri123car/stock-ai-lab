@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 import type { Experiment, Status } from '../types/types';
+import { barva, eur, odstotek, zasluzekText } from '../utils/format';
 import './Experiment.css';
 
 const STATUS: Record<Status, string> = {
@@ -13,18 +14,6 @@ const STATUS: Record<Status, string> = {
 };
 
 const OSVEZEVANJE_MS = 3000;
-
-const eur = (v: number | null) =>
-  v === null ? '–' : `${v.toLocaleString('sl-SI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
-
-/** Število s predznakom (+/−), ne samo barvo. */
-const odstotek = (v: number | null) =>
-  v === null ? '–' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('sl-SI', { maximumFractionDigits: 2 })} %`;
-
-const zasluzekText = (v: number | null) =>
-  v === null ? '–' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${eur(Math.abs(v))}`;
-
-const barva = (v: number | null) => (v === null || v === 0 ? '' : v > 0 ? 'exp__up' : 'exp__down');
 
 /** #67: podrobnosti eksperimenta, zagon in spremljanje statusa. Podrobne odločitve pridejo v #69. */
 export default function ExperimentPage() {

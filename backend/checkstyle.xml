@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+  Pravila sloga za backend. Namenoma so zmerna: lovijo prave napake in neurejenost
+  (neuporabljeni importi, prazni bloki, primerjava nizov z ==, ...), ne pa kozmetike.
+  Vsaka kršitev je napaka (severity=error), zato job "lint" v CI pade.
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java"/>
+
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf_cr_crlf"/>
+        <property name="severity" value="ignore"/>
+    </module>
+
+    <module name="LineLength">
+        <property name="max" value="140"/>
+        <property name="ignorePattern" value="^(package|import) .*"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- importi -->
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="IllegalImport"/>
+
+        <!-- poimenovanje -->
+        <module name="TypeName"/>
+        <!-- podčrtaj je dovoljen zaradi imen testov (npr. prices_napacenDatum_vrne400) -->
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9_]*$"/>
+        </module>
+        <module name="ConstantName">
+            <property name="format" value="^(log|[A-Z][A-Z0-9]*(_[A-Z0-9]+)*)$"/>
+        </module>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+        <module name="ParameterName"/>
+        <module name="PackageName"/>
+
+        <!-- bloki in izrazi -->
+        <module name="EmptyStatement"/>
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+        </module>
+        <module name="EmptyCatchBlock">
+            <property name="commentFormat" value=".+"/>
+        </module>
+        <module name="EqualsHashCode"/>
+        <module name="StringLiteralEquality"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="OneStatementPerLine"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="DefaultComesLast"/>
+        <module name="FallThrough"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="UpperEll"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
+        <module name="AvoidNestedBlocks"/>
+    </module>
+</module>

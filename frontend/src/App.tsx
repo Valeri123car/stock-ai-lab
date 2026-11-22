@@ -10,7 +10,7 @@ import ExperimentPage from './pages/ExperimentPage';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Header />
         <Routes>
           <Route path="/" element={<StockListPage />} />
