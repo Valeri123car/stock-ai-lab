@@ -2,7 +2,7 @@
 
 [![CI/CD](https://github.com/Valeri123car/stock-ai-lab/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/Valeri123car/stock-ai-lab/actions/workflows/ci-cd.yml)
 
-**Nameščena aplikacija:** https://valeri123car.github.io/stock-ai-lab/ · API: RENDER_URL/api/actuator/health
+**Nameščena aplikacija:** https://valeri123car.github.io/stock-ai-lab/ · API: https://stocklab-backend-latest.onrender.com/api/actuator/health
 
 > Backend teče na brezplačnem Render planu, ki po 15 minutah nedejavnosti zaspi. Prvi zahtevek po premoru lahko traja do ~1 minute.
  
