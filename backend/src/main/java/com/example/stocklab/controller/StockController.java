@@ -1,6 +1,5 @@
 package com.example.stocklab.controller;
 
-import java.util.ArrayList;
 import com.example.stocklab.dto.DateRangeDto;
 import com.example.stocklab.dto.PriceDto;
 import com.example.stocklab.dto.StockDto;
