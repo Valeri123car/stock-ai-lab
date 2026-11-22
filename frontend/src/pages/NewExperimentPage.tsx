@@ -22,6 +22,7 @@ export default function NewExperimentPage() {
   const [iskanje, setIskanje] = useState('');
   const [zadetki, setZadetki] = useState<Stock[]>([]);
   const [steviloNakljucnih, setSteviloNakljucnih] = useState(5);
+  const prikazaniZadetki = iskanje.trim().length < 1 ? [] : zadetki;
 
   // parametri
   const [odlocitveniDatum, setOdlocitveniDatum] = useState('');
@@ -48,10 +49,7 @@ export default function NewExperimentPage() {
 
   // iskanje instrumentov (300 ms po zadnjem tipkanju)
   useEffect(() => {
-    if (iskanje.trim().length < 1) {
-      setZadetki([]);
-      return;
-    }
+    if (iskanje.trim().length < 1) return;   // prazno iskanje: zadetki so izpeljani kot []
     const t = setTimeout(() => {
       api.stocks(iskanje).then(s => setZadetki(s.slice(0, 8))).catch(() => setZadetki([]));
     }, 300);
@@ -161,9 +159,9 @@ export default function NewExperimentPage() {
                 value={iskanje}
                 onChange={e => setIskanje(e.target.value)}
               />
-              {zadetki.length > 0 && (
+              {prikazaniZadetki.length > 0 && (
                 <ul className="exp__results">
-                  {zadetki.map(s => (
+                  {prikazaniZadetki.map(s => (
                     <li key={s.id}>
                       <button type="button" onClick={() => dodaj(s)}
                               disabled={izbrani.some(p => p.id === s.id)}>

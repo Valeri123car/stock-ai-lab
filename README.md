@@ -1,4 +1,10 @@
 # StockLab
+
+[![CI/CD](https://github.com/Valeri123car/stock-ai-lab/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/Valeri123car/stock-ai-lab/actions/workflows/ci-cd.yml)
+
+**Nameščena aplikacija:** https://valeri123car.github.io/stock-ai-lab/ · API: RENDER_URL/api/actuator/health
+
+> Backend teče na brezplačnem Render planu, ki po 15 minutah nedejavnosti zaspi. Prvi zahtevek po premoru lahko traja do ~1 minute.
  
 Raziskovalna spletna aplikacija, v kateri LLM agenti ob izbranem datumu v preteklosti odločijo, v katere delnice in indeksne sklade bi vlagali, nato pa sistem z realnimi kasnejšimi cenami izračuna, kateri agent bi se odrezal najbolje.
  
@@ -36,6 +42,7 @@ Razlogi za posamezne izbire so zapisani v [arhitekturnih odločitvah](docs/adr/R
 | [04 – Arhitektura in tehnološki sklad](docs/04-arhitektura-in-tehnoloski-sklad.md) | Zgradba sistema in tehnologije |
 | [05 – Uporabniške zgodbe](docs/05-uporabniske-zgodbe.md) | Uporabniške zgodbe s pogoji sprejemljivosti |
 | [06 – Wireframes](docs/06-wireframes.md) | Osnutki ključnih zaslonov |
+| [07 – Pregled projekta](docs/07-pregled-projekta.md) | Pregled implementiranih funkcionalnosti ob prevzemu |
 | [Arhitekturne odločitve (ADR)](docs/adr/README.md) | Zakaj smo izbrali posamezne rešitve |
  
 ## Stanje projekta
@@ -48,6 +55,32 @@ Razlogi za posamezne izbire so zapisani v [arhitekturnih odločitvah](docs/adr/R
 - [x] Zaprt posnetek, odločitev AI agenta in vrednotenje (US-05, US-06, US-07)
 - [ ] Prikaz odločitev z utemeljitvami in graf rasti portfeljev (US-08)
 - [ ] Zgodovina eksperimentov in primerjava modelov (US-09)
+## CI/CD cevovod
+
+Workflow [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) se sproži ob vsakem pull requestu v `main` in ob vsakem pushu na `main`.
+
+| Faza | Kaj naredi | Pade, če |
+|---|---|---|
+| **lint** | Backend: Checkstyle (pravila v [`backend/checkstyle.xml`](backend/checkstyle.xml)). Frontend: oxlint z `--deny-warnings` ([`frontend/.oxlintrc.json`](frontend/.oxlintrc.json)). | je katerakoli kršitev ali opozorilo |
+| **build** | Zgradi backend JAR (`mvnw package`) in frontend (`vite build` s produkcijskim URL-jem backenda). Shrani artefakta `backend-jar` in `frontend-dist`. | gradnja ali preverjanje tipov ne uspe |
+| **test** | Backend: JUnit + MockMvc (JaCoCo pokritost). Frontend: Vitest (v8 pokritost). Poročili shrani kot artefakt `coverage-reports`. | pade katerikoli test |
+| **deploy** | Samo ob pushu na `main` in ko so `lint`, `build` in `test` uspešni. V okolju `production` prenese artefakte (ne gradi ponovno): JAR zapakira v sliko, jo objavi v GHCR in z deploy hookom namesti na **Render**; `dist/` objavi na **GitHub Pages**. Na koncu počaka, da backend vrne `UP`. | namestitev ali health check ne uspe |
+
+Odvisnosti se predpomnijo (`actions/setup-java` → `~/.m2`, `actions/setup-node` → npm cache). Veja `main` je zaščitena: združitev je mogoča samo prek pull requesta z uspešnimi preverbami `lint`, `build` in `test`.
+
+**Nastavitve v GitHubu**
+
+| Vrsta | Ime | Vsebina |
+|---|---|---|
+| Repository variable | `VITE_API_URL` | javni URL backenda na Renderju |
+| Repository variable | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` | javna Supabase URL in publishable key |
+| Repository variable | `FRONTEND_URL` | URL GitHub Pages (prikaz v okolju) |
+| Secret okolja `production` | `RENDER_DEPLOY_HOOK_URL` | deploy hook Render storitve |
+
+Na Renderju so nastavljene spremenljivke `DB_URL`, `DB_USER`, `DB_PASSWORD`, `APP_ENCRYPTION_KEY`, `SUPABASE_URL` in `CORS_ALLOWED_ORIGINS=https://valeri123car.github.io`.
+
+Lokalno: `cd backend && .\mvnw.cmd checkstyle:check test` ter `cd frontend && npm run lint && npm run coverage`.
+
 ## Struktura repozitorija
  
 ```

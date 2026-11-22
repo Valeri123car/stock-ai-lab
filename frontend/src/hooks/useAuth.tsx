@@ -35,10 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // po prijavi pokliči backend: ustvari uporabnika in vrne vlogo ter stanje ključa
   useEffect(() => {
-    if (!session) {
-      setMe(null);
-      return;
-    }
+    if (!session) return;   // brez seje je me izpeljan kot null (spodaj)
     api.me().then(setMe).catch(() => setMe(null));
   }, [session]);
 
@@ -49,12 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     ime: meta.full_name ?? meta.name ?? session?.user.email ?? null,
     slika: meta.avatar_url ?? meta.picture ?? null,
-    me,
+    me: session ? me : null,
     setMe,
     signIn: async () => {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin },
+        options: { redirectTo: window.location.origin + import.meta.env.BASE_URL },
       });
     },
     signOut: async () => {
